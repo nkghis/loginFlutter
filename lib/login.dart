@@ -25,9 +25,11 @@ class _LoginPageState extends State<LoginPage> {
 	String _password = '';
 	String _error;
 
+	//Declaration des variables pour la gestion des focus du formulaire
 	FocusNode _emailFocusNode = FocusNode();
 	FocusNode _passwordFocusNode = FocusNode();
-	String _urlRoot = 'http://192.168.2.98:8000';
+
+	/*final */String _urlRoot = 'http://192.168.2.96:8000';
 	final TextEditingController _emailController = TextEditingController();
 	final TextEditingController _passwordController = TextEditingController();
 
@@ -151,6 +153,7 @@ class _LoginPageState extends State<LoginPage> {
 		);
 	}
 
+	//Animation
 	FadeAnimation _inputSubmit() {
 		return FadeAnimation(2, Container(
 			height: 50,
@@ -246,16 +249,22 @@ class _LoginPageState extends State<LoginPage> {
 		FocusScope.of(context).requestFocus(nextFocus);
 	}
 
+	//Login method
 	Future <User> login(String email, String password) async {
+
+		//Init SharePreferences
 		SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+		//Encodage de l objet en json
 		var body = jsonEncode(<String, String>{
 			'email': email,
 			'password': password,
 		});
 
+		//formataga de la route pour le backend
 		var url = '$_urlRoot/api/login';
 
-
+	 //Post des informations au backend
 		final response = await http.post(
 				url,
 				headers: <String, String>{
@@ -266,18 +275,25 @@ class _LoginPageState extends State<LoginPage> {
 		);
 
 
+		//Verification de la repense du serveur
 		if (response.statusCode == 200) {
-			//Create a map object
+
+			//Creation d'un objet de type Map
 			Map<String, dynamic> userMap = jsonDecode(response.body);
 
+			//
 			if(userMap != null){
 				setState(() {
 					_isLoading = false;
 				});
 			}
+			//Affectation de l obejet map a la classe User
 			User user = User.fromJson(userMap);
+
+			//Enregistrement d'ue variable dans SharePreference avec comme cle token et valeur le tokenaccess
 			sharedPreferences.setString("token", user.accessToken);
 
+			//Redirection vers la page d'acceuil
 			Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => HomePage()), (Route<dynamic> route) => false);
 			//Map
 

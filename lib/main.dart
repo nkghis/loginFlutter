@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'login.dart';
 //nimport 'models/User.dart';
 
+//Biblioteque qui garde des variable en memoire même suite à une fermeture de l'application.
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -29,20 +30,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  //Declaration
   SharedPreferences sharedPreferences;
+
+  //initialisation
   @override
   void initState() {
     super.initState();
     checkLoginStatus();
   }
 
+  //Methode qui verifie la presence de token dans l'objet SharePreferences et la redirige en fonction vers la la page indiquée
   checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
+
+    //Si SharePreferences contient la variable  dont la clé est token et la valeur egal à null redirige vers page de connexion
     if(sharedPreferences.getString("token") == null) {
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => LoginPage()), (Route<dynamic> route) => false);
     }
   }
 
+  //Page d'accueil
   @override
   Widget build(BuildContext context) {
     return Scaffold(
